@@ -42,7 +42,7 @@ def fw_header(name):
 		u32("arm11_entry"),
 		u32("arm9_entry"),
 		u8("reserved", 0x30),
-		Repeater(4, 4, fw_section_hdr("section_headers"))
+		Range(4, 4, fw_section_hdr("section_headers"))
 	)
 
 def fw_section_hdr(name):
@@ -122,7 +122,7 @@ def ncch_exhdr_codeset(name):
 
 def ncch_exhdr_dependencylist(name):
 	return Struct(name,
-		Repeater(8, 8, Bytes("program_id", 0x30))
+		Range(8, 8, Bytes("program_id", 0x30))
 	)
 
 def ncch_exhdr_storageinfo(name):
@@ -138,16 +138,16 @@ def ncch_exhdr_arm11_system_caps(name):
 	return Struct(name,
 		u64("program_id"),
 		u8("flags", 8),
-		Repeater(2, 2, u8("reslimit_desc", 0x10)),
+		Range(2, 2, u8("reslimit_desc", 0x10)),
 		ncch_exhdr_storageinfo("storageinfo"),
-		Repeater(8, 8, u8("service_access_control", 0x10)),
+		Range(8, 8, u8("service_access_control", 0x10)),
 		u8("reserved", 0x1f),
 		u8("reslimit_cat", 1)
 	)
 
 def ncch_exhdr_arm11_kernel_caps(name):
 	return Struct(name,
-		Repeater(4, 4, u8("descriptors", 28)),
+		Range(4, 4, u8("descriptors", 28)),
 		u8("reserved", 0x10)
 	)
 
@@ -186,9 +186,9 @@ def exefs_file_header(name):
 
 def exefs_header(name):
 	return Struct(name,
-		Repeater(8, 8, exefs_file_header("file_headers")),
+		Range(8, 8, exefs_file_header("file_headers")),
 		Bytes("reserved", 0x80),
-		Repeater(8, 8, Bytes("file_hashes", 0x20))
+		Range(8, 8, Bytes("file_hashes", 0x20))
 	)
 
 def get_type(f):
@@ -223,6 +223,9 @@ def load_firm_file(f, offs):
 		add_segm(0, section.loadadr, section.loadadr + section.size, ".section0"+str(section.core), "CODE")
 		mem2base(b[section.offset:], section.loadadr, section.loadadr + section.size)
 
+	add_entry(hdr.arm11_entry, hdr.arm11_entry, "arm11_start", True)
+	add_entry(hdr.arm9_entry, hdr.arm9_entry, "arm9_start", True)
+		
 	return 1
 
 def load_ncch_file(f, offset):
