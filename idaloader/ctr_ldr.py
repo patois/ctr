@@ -65,7 +65,7 @@ def ncch_hdr(name):
 		u32("reserved"),
 		u64("program_id"),
 		u8("tmp_flag"),
-		u8("reserved", 0x2f),
+		u8("reserved_", 0x2f),
 		u8("product_code", 0x10),
 		u8("exhdr_hash", 0x20),
 		u32("exhdr_size"),
